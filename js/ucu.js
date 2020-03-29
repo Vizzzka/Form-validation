@@ -8,10 +8,11 @@
 //    message is 10 or more characters.
 //    message must not iclude bad language: ugly, dumm, stupid, pig, ignorant
 // 2. Validate each input on the fly using onchange event
-// 3. Define re-usable validators: length, format,  
+// 3. Define re-usable validators: length, format,
 function validateMe(event) {
   event.preventDefault();
 
+  //email
   const emailNode = event.target.elements['email'];
   const emailErrorNode = emailNode.parentNode.querySelector('p.help-block')
   emailErrorNode.innerHTML = '';
@@ -19,21 +20,76 @@ function validateMe(event) {
   let emailErrors = document.createElement('ul');
   emailErrors.setAttribute("role", "alert");
 
-  if (emailNode.value.length < 5 ) {
-    let li = document.createElement('li');
-    li.innerText = 'Email is too short';
-    emailErrors.appendChild(li)
-  }
-
-  if (!emailNode.value.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-    let li = document.createElement('li');
-    li.innerText = 'Email format is incorrect';
-    emailErrors.appendChild(li)
-  }
+  validateLength(emailNode, emailErrors, "Email", 5);
+  validateFormat(emailNode, emailErrors, "Email", /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
   if (emailErrors.childElementCount > 0) {
     emailErrorNode.appendChild(emailErrors)
   }
 
+  // name
+  const nameNode = event.target.elements['name'];
+  const nameErrorNode = nameNode.parentNode.querySelector('p.help-block')
+  nameErrorNode.innerHTML = '';
+
+  let nameErrors = document.createElement('ul');
+  nameErrors.setAttribute("role", "alert");
+
+  validateLength(nameNode, nameErrors, "Name", 1);
+  validateFormat(nameNode, nameErrors, "Name", /^(\w+\s{2})*\w+$/);
+
+  if (nameErrors.childElementCount > 0) {
+    console.log(nameErrors.childElementCount);
+    nameErrorNode.appendChild(nameErrors)
+  }
+
+  //phone
+  const phoneNode = event.target.elements['phone'];
+  const phoneErrorNode = phoneNode.parentNode.querySelector('p.help-block')
+  phoneErrorNode.innerHTML = '';
+
+  let phoneErrors = document.createElement('ul');
+  phoneErrors.setAttribute("role", "alert");
+
+  validateLength(phoneNode, phoneErrors, "Phone", 12);
+  validateFormat(phoneNode, phoneErrors, "Phone", /^[+0](?:\d{5}|\d{3}\(\d{2}\))(?:-\d{3}-\d{2}-\d{2}|\s\d{3}\s\d{2}\s\d{2})$/);
+
+  if (phoneErrors.childElementCount > 0) {
+    phoneErrorNode.appendChild(phoneErrors)
+  }
+
+  //Message
+  const messageNode = event.target.elements['message'];
+  const messageErrorNode = messageNode.parentNode.querySelector('p.help-block')
+  messageErrorNode.innerHTML = '';
+
+  let messageErrors = document.createElement('ul');
+  messageErrors.setAttribute("role", "alert");
+
+  validateLength(messageNode, messageErrors, "Message", 10);
+  validateFormat(messageNode, messageErrors, "Message", /^((?!(ugly|dumm|stupid|pig|ignorant)).)*$/);
+
+  if (messageErrors.childElementCount > 0) {
+    messageErrorNode.appendChild(messageErrors)
+  }
+
   return false;
+}
+
+
+function validateLength(fieldNode, fieldErrors, fieldName, length) {
+  if (fieldNode.value.length < length ) {
+    let li = document.createElement('li');
+    li.innerText = fieldName + ' is too short';
+    fieldErrors.appendChild(li)
+  }
+
+}
+
+function validateFormat(fieldNode, fieldErrors, fieldName, reg) {
+  if (!fieldNode.value.match(reg)) {
+    let li = document.createElement('li');
+    li.innerText = fieldName + ' format is incorrect';
+    fieldErrors.appendChild(li)
+  }
 }
