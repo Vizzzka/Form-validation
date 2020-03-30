@@ -4,16 +4,33 @@
 //    name has 0 or 2 whitespaces benween words
 //    name length is 1 or more chars
 //    phone length is 12 or more digits
-//    phone format is correct. Valid formats: "+38032 000 000 00", "+380(32) 000 000 00", "+380(32)-000-000-00", "0380(32) 000 000 00", + any combitaion
+//    phone format is correct. Valid formats: "+38032 000 00 00", "+380(32) 000 00 00", "+380(32)-000-00-00", "0380(32) 000 00 00", + any combitaion
 //    message is 10 or more characters.
 //    message must not iclude bad language: ugly, dumm, stupid, pig, ignorant
 // 2. Validate each input on the fly using onchange event
 // 3. Define re-usable validators: length, format,
+
+let email = document.getElementById("email");
+let name = document.getElementById("name");
+let phone = document.getElementById("phone");
+let message = document.getElementById("message");
+
+email.addEventListener("change", () => validateEmail(email));
+name.addEventListener("change", () => validateName(name));
+phone.addEventListener("change", () => validatePhone(phone));
+message.addEventListener("change", () => validateMessage(message));
+
 function validateMe(event) {
   event.preventDefault();
+  validateEmail(event.target.elements['email']);
+  validateName(event.target.elements['name']);
+  validatePhone(event.target.elements['phone']);
+  validateMessage(event.target.elements['message']);
 
-  //email
-  const emailNode = event.target.elements['email'];
+  return false;
+}
+
+function validateEmail(emailNode) {
   const emailErrorNode = emailNode.parentNode.querySelector('p.help-block')
   emailErrorNode.innerHTML = '';
 
@@ -27,8 +44,9 @@ function validateMe(event) {
     emailErrorNode.appendChild(emailErrors)
   }
 
-  // name
-  const nameNode = event.target.elements['name'];
+}
+
+function validateName(nameNode) {
   const nameErrorNode = nameNode.parentNode.querySelector('p.help-block')
   nameErrorNode.innerHTML = '';
 
@@ -39,12 +57,12 @@ function validateMe(event) {
   validateFormat(nameNode, nameErrors, "Name", /^(\w+\s{2})*\w+$/);
 
   if (nameErrors.childElementCount > 0) {
-    console.log(nameErrors.childElementCount);
+    // console.log(nameErrors.childElementCount);
     nameErrorNode.appendChild(nameErrors)
   }
+}
 
-  //phone
-  const phoneNode = event.target.elements['phone'];
+function validatePhone(phoneNode) {
   const phoneErrorNode = phoneNode.parentNode.querySelector('p.help-block')
   phoneErrorNode.innerHTML = '';
 
@@ -52,14 +70,14 @@ function validateMe(event) {
   phoneErrors.setAttribute("role", "alert");
 
   validateLength(phoneNode, phoneErrors, "Phone", 12);
-  validateFormat(phoneNode, phoneErrors, "Phone", /^[+0](?:\d{5}|\d{3}\(\d{2}\))(?:-\d{3}-\d{2}-\d{2}|\s\d{3}\s\d{2}\s\d{2})$/);
+  validateFormat(phoneNode, phoneErrors, "Phone", /^(\+380(\d{2} \d{3} \d{2} \d{2}|\(\d{2}\)( \d{3} \d{2} \d{2}|-\d{3}-\d{2}-\d{2}))|0380\(\d{2}\) \d{3} \d{2} \d{2})/);
 
   if (phoneErrors.childElementCount > 0) {
     phoneErrorNode.appendChild(phoneErrors)
   }
+}
 
-  //Message
-  const messageNode = event.target.elements['message'];
+function validateMessage(messageNode) {
   const messageErrorNode = messageNode.parentNode.querySelector('p.help-block')
   messageErrorNode.innerHTML = '';
 
@@ -72,10 +90,7 @@ function validateMe(event) {
   if (messageErrors.childElementCount > 0) {
     messageErrorNode.appendChild(messageErrors)
   }
-
-  return false;
 }
-
 
 function validateLength(fieldNode, fieldErrors, fieldName, length) {
   if (fieldNode.value.length < length ) {
